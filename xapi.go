@@ -144,8 +144,6 @@ func TimeoutDialer() func(net, addr string) (c net.Conn, err error) {
 //		if err != nil {
 //			fmt.Printf("%v", host)
 //		}
-	
-*/
 func (client *XapiClient) RpcCall(result interface{}, call string, params ...interface{}) (err error) {
 	response := xmlrpc.Struct{}
 	p := xmlrpc.Params{}
