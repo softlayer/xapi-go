@@ -1,5 +1,7 @@
 A XAPI go binding with native interfaces and structs.  Still a work in progress, welcoming pull requests.
 
+[Documentation](http://godoc.org/github.com/softlayer/xapi-go)
+
 ```go
 import (
     "fmt"
