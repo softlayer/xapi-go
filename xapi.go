@@ -18,9 +18,7 @@ type XapiClient struct {
 	rpc      *xmlrpc.Client
 }
 
-/*
-   Stand up a new XapiClient.  Version should probably be "1.2" unless you know what you are doing.
-*/
+// Stand up a new XapiClient.  Version should probably be "1.2" unless you know what you are doing.
 func NewXapiClient(uri, username, password, version string) (client XapiClient) {
 	client.Uri = uri
 	client.Username = username
@@ -109,11 +107,9 @@ func (client *XapiClient) GetHostname(opref string) (hostname string, err error)
 	return
 }
 
-/*
-	Useful for making multiple calls that require the session ID.  Automatically prepends the existing
-	session OpaqRef to the beginning of the API call.  You can see the session ID by looking at
-	XapiClient.Session.
-*/
+// Useful for making multiple calls that require the session ID.  Automatically prepends the existing
+// session OpaqRef to the beginning of the API call.  You can see the session ID by looking at
+// XapiClient.Session.
 func (client *XapiClient) SessionCall(result interface{}, call string, params ...interface{}) (err error) {
 	if client.Session == "" {
 		return fmt.Errorf("NO_SESSION")
@@ -138,15 +134,17 @@ func TimeoutDialer() func(net, addr string) (c net.Conn, err error) {
 	}
 }
 
-/* Make a generic RPC call passing in a pointer to a struct (or xmlrpc.Struct). The call parameter
-   is a combination of class.message.  For example:
-
-		VIF.get_record
-		host.evacuate
-		pool.eject
-
-	Any time the XAPI specifies a `type ref` it's really an OpaqueReference, which is a UUID, and
-	as far as xmlrpc and like library are concerned, a string.
+// Make a generic RPC call passing in a pointer to a struct (or xmlrpc.Struct). The call parameter
+// is a combination of class.message.  For example: VIF.get_record, host.evacuate, pool.eject.
+// Any time the XAPI specifies a `type ref` it's really an OpaqueReference, which is a UUID, and
+// as far as xmlrpc and like library are concerned, a string.
+//		x := xapi.NewXapiClient("http://localhost/", "username", "password", "1.2")
+//		host := xapi.Host{}
+//		err := x.RpcCall(&host, "host.get_record", "324c2264-d86f-4a42-a971-bb5fd6203877")
+//		if err != nil {
+//			fmt.Printf("%v", host)
+//		}
+	
 */
 func (client *XapiClient) RpcCall(result interface{}, call string, params ...interface{}) (err error) {
 	response := xmlrpc.Struct{}
@@ -173,9 +171,8 @@ func (client *XapiClient) RpcCall(result interface{}, call string, params ...int
 	return
 }
 
-/* checkResponse is a way to handle and return meaning status codes based on the payload since the body
-   of the response changes depending on if it's an error or a success.  This handled for you in RpcCall
-*/
+// checkResponse is a way to handle and return meaning status codes based on the payload since the body
+// of the response changes depending on if it's an error or a success.  This handled for you in RpcCall
 func checkResponse(res xmlrpc.Struct) error {
 	var success interface{}
 	var ok bool
