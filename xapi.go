@@ -6,28 +6,7 @@ import (
 	"net"
 	"net/http"
 	"time"
-	"unicode"
-	"unicode/utf8"
 )
-
-/* Needed
- *  session.logout
- *  VBD.get_record
- *  VDI.get_record
- *  network.get_record
- */
-
-/* Completed
- *  PIF.get_record
- *  VM.get_all
- *  VM.get_record
- *  VIF.get_record
- *  host.get_record
- *  host.get_hostname
- *  session.get_record
- *  session.login_with_password
- *  event.register event.unregister event.next
- */
 
 type XapiClient struct {
 	Session  string
@@ -192,10 +171,4 @@ func checkResponse(res xmlrpc.Struct) error {
 	return fmt.Errorf("XenServer Failed: %s", error_string)
 }
 
-func UF(s string) string {
-	if s == "" {
-		return ""
-	}
-	r, n := utf8.DecodeRuneInString(s)
-	return string(unicode.ToUpper(r)) + s[n:]
-}
+
