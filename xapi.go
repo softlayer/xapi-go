@@ -1,3 +1,4 @@
+// A generic binding of the Citrix XenServer API.  Read more here: http://docs.vmd.citrix.com/XenServer/6.0.0/1.0/en_gb/api/
 package xapi
 
 import (
@@ -17,6 +18,9 @@ type XapiClient struct {
 	rpc      *xmlrpc.Client
 }
 
+/*
+   Stand up a new XapiClient.  Version should probably be "1.2" unless you know what you are doing.
+*/
 func NewXapiClient(uri, username, password, version string) (client XapiClient) {
 	client.Uri = uri
 	client.Username = username
@@ -31,6 +35,8 @@ func NewXapiClient(uri, username, password, version string) (client XapiClient) 
 	return
 }
 
+// Check to see if a field that should be an OpaqueRef is actually empty.  Sometimes it's an empty string (rare)
+// but other times it's OpaqueRef:NULL which is good to know.
 func OpaqueRefIsEmpty(a string) bool {
 	if a == "OpaqueRef:NULL" || a == "" {
 		return true
@@ -97,11 +103,17 @@ func (client *XapiClient) GetHost(opref string) (host Host, err error) {
 	return
 }
 
+// Get hostname of a Host.  Useful in combination with GetSession and session.This_host
 func (client *XapiClient) GetHostname(opref string) (hostname string, err error) {
 	err = client.SessionCall(&hostname, "host.get_hostname", opref)
 	return
 }
 
+/*
+	Useful for making multiple calls that require the session ID.  Automatically prepends the existing
+	session OpaqRef to the beginning of the API call.  You can see the session ID by looking at
+	XapiClient.Session.
+*/
 func (client *XapiClient) SessionCall(result interface{}, call string, params ...interface{}) (err error) {
 	if client.Session == "" {
 		return fmt.Errorf("NO_SESSION")
@@ -112,6 +124,9 @@ func (client *XapiClient) SessionCall(result interface{}, call string, params ..
 	return
 }
 
+// Custom Dialer for HTTP so that the initial connection only lasts for 1 minute
+// and that the lifetime of the connection is only 1 minute as well. See http://golang.org/pkg/net/#Conn
+// You shouldn't need to use this directly.
 func TimeoutDialer() func(net, addr string) (c net.Conn, err error) {
 	return func(netw, addr string) (net.Conn, error) {
 		conn, err := net.DialTimeout(netw, addr, time.Minute)
@@ -123,6 +138,16 @@ func TimeoutDialer() func(net, addr string) (c net.Conn, err error) {
 	}
 }
 
+/* Make a generic RPC call passing in a pointer to a struct (or xmlrpc.Struct). The call parameter
+   is a combination of class.message.  For example:
+
+		VIF.get_record
+		host.evacuate
+		pool.eject
+
+	Any time the XAPI specifies a `type ref` it's really an OpaqueReference, which is a UUID, and
+	as far as xmlrpc and like library are concerned, a string.
+*/
 func (client *XapiClient) RpcCall(result interface{}, call string, params ...interface{}) (err error) {
 	response := xmlrpc.Struct{}
 	p := xmlrpc.Params{}
@@ -148,6 +173,9 @@ func (client *XapiClient) RpcCall(result interface{}, call string, params ...int
 	return
 }
 
+/* checkResponse is a way to handle and return meaning status codes based on the payload since the body
+   of the response changes depending on if it's an error or a success.  This handled for you in RpcCall
+*/
 func checkResponse(res xmlrpc.Struct) error {
 	var success interface{}
 	var ok bool
@@ -170,5 +198,3 @@ func checkResponse(res xmlrpc.Struct) error {
 
 	return fmt.Errorf("XenServer Failed: %s", error_string)
 }
-
-
