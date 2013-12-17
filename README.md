@@ -1,4 +1,4 @@
-A XAPI go binding with native interfaces and structs.  Still a work in progress, welcoming pull requests.
+A XAPI ([XenServer API](http://docs.vmd.citrix.com/XenServer/6.0.0/1.0/en_gb/api/)) go binding with native interfaces and structs.  Still a work in progress, welcoming pull requests.
 
 [Documentation](http://godoc.org/github.com/softlayer/xapi-go)
 
