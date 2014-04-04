@@ -18,6 +18,8 @@ type XapiClient struct {
 	rpc      *xmlrpc.Client
 }
 
+type Struct map[string]interface{}
+
 // Stand up a new XapiClient.  Version should probably be "1.2" unless you know what you are doing.
 func NewXapiClient(uri, username, password, version string) (client XapiClient) {
 	client.Uri = uri
@@ -134,7 +136,7 @@ func TimeoutDialer() func(net, addr string) (c net.Conn, err error) {
 	}
 }
 
-// Make a generic RPC call passing in a pointer to a struct (or xmlrpc.Struct). The call parameter
+// Make a generic RPC call passing in a pointer to a struct (or f). The call parameter
 // is a combination of class.message.  For example: VIF.get_record, host.evacuate, pool.eject.
 // Any time the XAPI specifies a `type ref` it's really an OpaqueReference, which is a UUID, and
 // as far as xmlrpc and like library are concerned, a string.
@@ -145,14 +147,9 @@ func TimeoutDialer() func(net, addr string) (c net.Conn, err error) {
 //			fmt.Printf("%v", host)
 //		}
 func (client *XapiClient) RpcCall(result interface{}, call string, params ...interface{}) (err error) {
-	response := xmlrpc.Struct{}
-	p := xmlrpc.Params{}
-	p.Params = make([]interface{}, len(params))
-	for i, d := range params {
-		p.Params[i] = d
-	}
+	response := Struct{}
 
-	err = client.rpc.Call(call, p, &response)
+	err = client.rpc.Call(call, params, &response)
 
 	if err != nil {
 		return
@@ -171,7 +168,7 @@ func (client *XapiClient) RpcCall(result interface{}, call string, params ...int
 
 // checkResponse is a way to handle and return meaning status codes based on the payload since the body
 // of the response changes depending on if it's an error or a success.  This handled for you in RpcCall
-func checkResponse(res xmlrpc.Struct) error {
+func checkResponse(res Struct) error {
 	var success interface{}
 	var ok bool
 	var error_string interface{}
