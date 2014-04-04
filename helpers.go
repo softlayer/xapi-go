@@ -1,7 +1,6 @@
 package xapi
 
 import (
-	"github.com/kolo/xmlrpc"
 	"log"
 	"reflect"
 	"strconv"
@@ -9,12 +8,12 @@ import (
 	"unicode/utf8"
 )
 
-func unMarshallXmlRPC(in xmlrpc.Struct, out interface{}) {
+func unMarshallXmlRPC(in Struct, out interface{}) {
 	ov := reflect.Indirect(reflect.ValueOf(out))
 	iv := reflect.ValueOf(in["Value"])
 
 	if ov.Kind() == reflect.Struct {
-		setStruct(in["Value"].(xmlrpc.Struct), ov)
+		setStruct(in["Value"].(Struct), ov)
 		return
 	}
 
@@ -31,19 +30,19 @@ func unMarshallXmlRPC(in xmlrpc.Struct, out interface{}) {
 			}
 
 			if ov.Index(i).Kind() == reflect.Struct {
-				setStruct(a.(xmlrpc.Struct), ov.Index(i))
+				setStruct(a.(Struct), ov.Index(i))
 			} else {
 				ov.Index(i).Set(reflect.ValueOf(a))
 			}
 
 		}
 		return
-	case xmlrpc.Struct:
+	case Struct:
 		setStruct(in, ov)
 	}
 }
 
-func setStruct(in xmlrpc.Struct, str reflect.Value) {
+func setStruct(in Struct, str reflect.Value) {
 	for k, v := range in {
 		field := str.FieldByName(UF(k))
 		if !field.CanSet() || !field.IsValid() || v == nil {
@@ -61,7 +60,7 @@ func setStruct(in xmlrpc.Struct, str reflect.Value) {
 			setString(v, field)
 		case reflect.Map:
 			field.Set(reflect.MakeMap(field.Type()))
-			for a, b := range v.(xmlrpc.Struct) {
+			for a, b := range v.(Struct) {
 				if a == "" || b == nil {
 					continue
 				}
