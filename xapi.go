@@ -118,11 +118,11 @@ func (client *XapiClient) GetHostname(opref string) (hostname string, err error)
 // XapiClient.Session.
 func (client *XapiClient) SessionCall(result interface{}, call string, params ...interface{}) (err error) {
 	if client.Session == "" {
-		return fmt.Errorf("NO_SESSION")
+		return fmt.Errorf("no session")
 	}
-	p := make([]interface{}, len(params)+1)
-	p[0] = client.Session
-	err = client.RpcCall(result, call, append(p, params...)...)
+
+	params = append([]interface{client.Session}, params...)
+	err = client.RpcCall(result, call, params...)
 	return
 }
 
