@@ -18,7 +18,11 @@ type XapiClient struct {
 	rpc      *xmlrpc.Client
 }
 
-type Struct map[string]interface{}
+type APIResult struct {
+	Status string
+	Value interface{}
+	ErrorDescription string
+}
 
 // Stand up a new XapiClient.  Version should probably be "1.2" unless you know what you are doing.
 func NewXapiClient(uri, username, password, version string) (client XapiClient) {
@@ -146,47 +150,17 @@ func TimeoutDialer() func(net, addr string) (c net.Conn, err error) {
 //		if err != nil {
 //			fmt.Printf("%v", host)
 //		}
-func (client *XapiClient) RpcCall(result interface{}, call string, params ...interface{}) (err error) {
-	response := Struct{}
+func (client *XapiClient) RpcCall(result interface{}, call string, params ...interface{}) (error) {
+	response := APIResult{Value: result}
 
-	err = client.rpc.Call(call, params, &response)
-
+	err := client.rpc.Call(call, params, &response)
 	if err != nil {
-		return
+		return err
 	}
 
-	if err = checkResponse(response); err != nil {
-		return
+	if response.Status != "Success" {
+		return fmt.Errorf("XenServer Failed: %s", response.ErrorDescription)
 	}
 
-	if result != nil {
-		unMarshallXmlRPC(response, result)
-	}
-
-	return
-}
-
-// checkResponse is a way to handle and return meaning status codes based on the payload since the body
-// of the response changes depending on if it's an error or a success.  This handled for you in RpcCall
-func checkResponse(res Struct) error {
-	var success interface{}
-	var ok bool
-	var error_string interface{}
-
-	if success, ok = res["Status"]; ok && success == "Success" {
-		if _, ok = res["Value"]; !ok {
-			return fmt.Errorf("'Value' is missing in result!")
-		}
-		return nil
-	}
-
-	if !ok {
-		return fmt.Errorf("'Status' not in result!")
-	}
-
-	if error_string, ok = res["ErrorDescription"]; !ok {
-		error_string = "Missing Error description!"
-	}
-
-	return fmt.Errorf("XenServer Failed: %s", error_string)
+	return nil
 }

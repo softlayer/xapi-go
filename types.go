@@ -46,8 +46,8 @@ type VDI struct {
 	SR                   []string
 	Storage_lock         bool
 	Tags                 string
-	Type                 string `json:"type"`
-	Uuid                 string `json:"uuid"`
+	Type                 string
+	Uuid                 string
 	VDBs                 []string
 	Virtual_size         int
 	Xenstore_data        map[string]string
@@ -69,11 +69,11 @@ type VDB struct {
 	Runtime_properties       map[string]string
 	Status_code              int
 	Status_detail            string
-	Uuid                     string `json:"uuid"`
+	Uuid                     string
 	VDI                      string
 	VM                       string
 	Storage_lock             bool
-	Type                     string `json:"type"`
+	Type                     string
 	Unpluggable              bool
 	Userdevice               string
 }
@@ -141,7 +141,7 @@ type VM struct {
 	Tags                      []string
 	Transportable_snapshot_id string
 	User_version              int
-	Uuid                      string `json:"uuid"`
+	Uuid                      string
 	VBDs                      []string
 	VCPUs_at_startup          int
 	VCPUs_max                 int
@@ -179,7 +179,7 @@ type VIF struct {
 	Runtime_properties       map[string]string
 	Status_code              int
 	Status_detail            string
-	Uuid                     string `json:"uuid"`
+	Uuid                     string
 	VM                       string
 }
 
@@ -204,7 +204,7 @@ type PIF struct {
 	Physical                bool
 	Tunnel_access_PIF_of    string
 	Tunnel_transport_PIF_of string
-	Uuid                    string `json:"uuid"`
+	Uuid                    string
 	VLAN                    int
 	VLAN_master_of          string
 	VLAN_slave_of           []string
@@ -255,6 +255,6 @@ type Host struct {
 	Software_version                  map[string]string
 	Supported_bootloaders             []string
 	Suspend_image_sr                  string
-	Uuid                              string `json:"uuid"`
+	Uuid                              string
 	Tags                              []string
 }
