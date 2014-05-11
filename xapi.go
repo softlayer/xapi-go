@@ -121,7 +121,7 @@ func (client *XapiClient) SessionCall(result interface{}, call string, params ..
 		return fmt.Errorf("no session")
 	}
 
-	params = append([]interface{client.Session}, params...)
+	params = append([]interface{}{client.Session}, params...)
 	err = client.RpcCall(result, call, params...)
 	return
 }
