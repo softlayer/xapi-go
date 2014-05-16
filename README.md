@@ -10,7 +10,7 @@ import (
 
 func main() {
     x := xapi.NewXapiClient("http://127.0.0.1", "root", "pass", "1.2")
-    if err := x.Login(); if err != nil {
+    if err := x.Login(); err != nil {
         panic(err)
     }
     // obtain session object to find out the host we are connected to
