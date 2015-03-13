@@ -1,8 +1,21 @@
 package xapi
 
+type Response interface {
+	Status() string
+	ErrorDescription() string
+}
+
 type ResponseBase struct {
-	Status           string
-	ErrorDescription string
+	status           string `xmlrpc:"Status"`
+	errorDescription string `xmlrpc:"ErrorDescription"`
+}
+
+func (resp ResponseBase) Status() string {
+	return resp.status
+}
+
+func (resp ResponseBase) ErrorDescription() string {
+	return resp.errorDescription
 }
 
 type StringResponse struct {

@@ -112,7 +112,7 @@ func (client *Client) GetHostname(opref string) (hostname string, err error) {
 // SessionCall is a useful for making multiple calls that require the session ID.  Automatically prepends the existing
 // session OpaqRef to the beginning of the API call.  You can see the session ID by looking at
 // Client.Session.
-func (client *Client) SessionCall(result interface{}, call string, params ...interface{}) (err error) {
+func (client *Client) SessionCall(result Response, call string, params ...interface{}) (err error) {
 	if client.Session == "" {
 		return fmt.Errorf("no session")
 	}
@@ -145,21 +145,17 @@ func TimeoutDialer() func(net, addr string) (c net.Conn, err error) {
 //		if err != nil {
 //			fmt.Printf("%v", host)
 //		}
-func (client *Client) Call(result interface{}, call string, params ...interface{}) error {
-	response := struct {
-		Status           string
-		ErrorDescription string
-		Value            string
-	}{}
+func (client *Client) Call(result Response, call string, params ...interface{}) error {
 
-	err := client.rpc.Call(call, params, &response)
+	err := client.rpc.Call(call, params, result)
 	if err != nil {
 		return err
 	}
 
-	if response.Status != "Success" {
-		return fmt.Errorf("XenServer Failed: %s", response.ErrorDescription)
-	}
+	// TODO: The XMLRPC library isn't smart enough to handle composition so the Status and ErrorDescription values are never set
+	// if result.Status() != "Success" {
+	// 	return fmt.Errorf("XenServer Failed: %s", result.ErrorDescription())
+	// }
 
 	return nil
 }
