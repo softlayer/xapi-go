@@ -40,6 +40,11 @@ type EventResponse struct {
 	Value Event
 }
 
+type EventsResponse struct {
+	ResponseBase
+	Value []Event
+}
+
 type VIFResponse struct {
 	ResponseBase
 	Value VIF
