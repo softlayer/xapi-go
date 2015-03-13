@@ -5,6 +5,7 @@ A XAPI ([XenServer API](http://docs.vmd.citrix.com/XenServer/6.0.0/1.0/en_gb/api
 ```go
 import (
     "fmt"
+
     xapi "github.com/softlayer/xapi-go"
 )
 
@@ -15,8 +16,8 @@ func main() {
     }
     // obtain session object to find out the host we are connected to
     session, _ := x.GetSession()
-    hostname, _ := x.GetHostname(session.This_host)
-    host, _ := x.GetHost(session.This_host)
+    hostname, _ := x.GetHostname(session.ThisHost)
+    host, _ := x.GetHost(session.ThisHost)
     machines, err := x.GetVMs()
     // ...
 }
