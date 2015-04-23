@@ -37,18 +37,19 @@ func NewClient(uri, username, password, version string) (client Client) {
 }
 
 // Login will authenticate the current session
-func (client *Client) Login() (err error) {
+func (client *Client) Login() error {
 	resp := StringResponse{}
-	err = client.Call(
+	err := client.Call(
 		&resp,
 		"session.login_with_password",
 		client.Username,
 		client.Password,
 		client.Version)
 	if err != nil {
-		client.Session = resp.Value
+		return err
 	}
-	return
+	client.Session = resp.Value
+	return nil
 }
 
 func (client *Client) GetSession() (session Session, err error) {
